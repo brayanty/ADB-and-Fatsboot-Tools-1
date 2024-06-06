@@ -1,0 +1,13 @@
+#include "define.h"
+
+Menu MENU
+BEGIN
+   POPUP "&Principal"
+      BEGIN
+         MENUITEM "&Prueba", CM_PRUEBA
+         MENUITEM SEPARATOR
+         MENUITEM "&Salir", CM_SALIR
+      END
+END
+
+
