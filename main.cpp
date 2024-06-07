@@ -8,6 +8,7 @@
 #include <string>
 #include "openFile.h"
 #include "define.h"
+#include "wstrinToWchar_t.h"
 
 /* Datos de la aplicación */
 typedef struct stDatos {
@@ -22,6 +23,22 @@ WNDCLASSEX wc; /* A properties struct of our window */
 
 using namespace std;
 std::wstring fileToFlash;
+LPCWSTR fileToFlashConvert;
+
+
+
+bool wstringToWcharT(std::wstring wideStr) {
+	// Crear un búfer para almacenar la cadena de caracteres anchos (wide)
+	wchar_t* buffer = new wchar_t[wideStr.length() + 1];
+	// Copiar la cadena wstring al búfer wchar_t
+	wcscpy(buffer, wideStr.c_str());
+	// Asignar el puntero del búfer a fileToFlashConvert
+	fileToFlashConvert = buffer;
+	// Liberar la memoria asignada para el búfer
+	delete[] buffer;
+
+	return true;
+}
 
 /* This is where all the input to the window goes to */
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
@@ -52,7 +69,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 			SendMessage(hComboBox, CB_ADDSTRING, 0, (LPARAM)L"2");
 			SendMessage(hComboBox, CB_ADDSTRING, 0, (LPARAM)L"3");
 
-		 	// Seleccionar elemento por defecto
+			// Seleccionar elemento por defecto
 			SendMessage(hComboBox, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)Datos.Item[0]);
 
 			// Crear primer botón de prueba
@@ -77,6 +94,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 				case ID_BROWSE: {
 					if (openFile(fileToFlash)) {
 						SetWindowTextW(GetDlgItem(hwnd, ID_EDITTIFLASH), fileToFlash.c_str());
+						wstringToWcharT(fileToFlash);
+						MessageBox(hwnd,fileToFlashConvert,L"w", MB_OKCANCEL | MB_ICONEXCLAMATION);
 					} else {
 						MessageBoxW(hwnd, L"No se seleccionó ningún archivo o hubo un error.", L"Error", MB_OK | MB_ICONERROR);
 					}
